@@ -1,0 +1,210 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer;
+@inject MPQ.Utils.Shared.LocSharedService SharedLocalizer;
+
+@model MPQ.Models.GoalCustomerViewModel
+@using MPQ.Domain
+
+@{
+    ViewData["Title"] = "Edit";
+
+    var valor = Localizer["Titulo"];
+    var culture = Context.Request.Cookies[".AspNetCore.Culture"];
+}
+
+<h1>Edit</h1>
+
+<h4>GoalCustomer</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <input asp-for="Id" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="SiteId" class="control-label"></label>
+                <select asp-for="SiteId"
+                        asp-items="@((IEnumerable<SelectListItem>)ViewBag.Site)" class="form-control">
+                </select>
+                <span asp-validation-for="SiteId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CustomerId" class="control-label"></label>
+                <select asp-for="CustomerId"
+                        asp-items="@((IEnumerable<SelectListItem>)ViewBag.Customer)" class="form-control">
+                </select>
+                <span asp-validation-for="CustomerId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UnitOfMeasurement" class="control-label"></label>
+                <input asp-for="UnitOfMeasurement" class="form-control" />
+                <span asp-validation-for="UnitOfMeasurement" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StfNumber" class="control-label"></label>
+                <input asp-for="StfNumber" class="form-control" />
+                <span asp-validation-for="StfNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" id="nav-range-tab" data-bs-toggle="tab" data-bs-target="#nav-range" role="tab" aria-controls="nav-range" aria-selected="true" aria-current="page" href="#">Range</a>
+    </li>
+</ul>
+
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-range" role="tabpanel" aria-labelledby="nav-range-tab">
+        <button type="button" style="margin-top: 5px; margin-bottom: 5px;" class="btn btn-info" data-toggle="modal" data-target="#rangeAddModal">
+            <i class="fas fa-plus"></i> @SharedLocalizer.GetLocalizedHtmlString("Novo")
+        </button>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.GoalCustomerRanges.FirstOrDefault().Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.GoalCustomerRanges.FirstOrDefault().Operator)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.GoalCustomerRanges.FirstOrDefault().Value)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.GoalCustomerRanges.FirstOrDefault().Color)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.GoalCustomerRanges)
+                {
+                <tr>
+                    <td style="width: 40px;">
+                        <a href="#" onclick="RemoveRange(@item.Id)"><i class="bi bi-x-lg"></i></a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td style="width: 90px;">
+                        @Html.DisplayFor(modelItem => item.Operator.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Value)
+                    </td>
+                    <td style="width: 90px; background-color: @Html.Raw(item.Color)">
+                        @Html.DisplayFor(modelItem => item.Color)
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+<div class="modal fade in" id="rangeAddModal" tabindex="-1" aria-labelledby="addRangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-action="AddRange">
+                <input asp-for="Id" type="hidden" name="GoalCustomerId" />
+                <div class="modal-header">
+                    <h4 class="modal-title">Add</h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">x</span><span class="sr-only">Fechar</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="GoalCustomerRanges.FirstOrDefault().Name" class="form-control" name="Name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="GoalCustomerRanges.FirstOrDefault().OperatorId" class="control-label"></label>
+                        <select asp-for="GoalCustomerRanges.FirstOrDefault().OperatorId" asp-items="ViewBag.Operator" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+                        <span asp-validation-for="GoalCustomerRanges.FirstOrDefault().OperatorId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="GoalCustomerRanges.FirstOrDefault().Value" class="control-label"></label>
+                        <input asp-for="GoalCustomerRanges.FirstOrDefault().Value" class="form-control" name="Value" />
+                        <span asp-validation-for="GoalCustomerRanges.FirstOrDefault().Value" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="GoalCustomerRanges.FirstOrDefault().Color" class="control-label"></label>
+                        <div class="example-content-widget">
+                            <div id="color-picker" class="input-group colorpicker-component">
+                                <input asp-for="GoalCustomerRanges.FirstOrDefault().Color" type="color" class="form-control" name="Color" />
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                        </div>
+                        <span asp-validation-for="GoalCustomerRanges.FirstOrDefault().Color" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@SharedLocalizer.GetLocalizedHtmlString("Fechar")</button>
+                    <input type="submit" value="@SharedLocalizer.GetLocalizedHtmlString("Salvar")" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" id="rangeRemoveModal" tabindex="-1" aria-labelledby="rangeRemoveModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-action="RemoveRange">
+                <input asp-for="Id" type="hidden" name="pGoalCustomerId" />
+                <input type="hidden" id="pGoalCustomerRangeId" name="pGoalCustomerRangeId" />
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirmation</h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">x</span><span class="sr-only">Fechar</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    A Faixa será eliminada. Deseja continuar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@SharedLocalizer.GetLocalizedHtmlString("Fechar")</button>
+                    <input type="submit" value="@SharedLocalizer.GetLocalizedHtmlString("Confirmar")" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function RemoveRange(pRange) {
+        console.log('RemoveRange', pRange);
+        $('#pGoalCustomerRangeId').val(pRange);
+        $('#rangeRemoveModal').modal('show');
+    }
+</script>

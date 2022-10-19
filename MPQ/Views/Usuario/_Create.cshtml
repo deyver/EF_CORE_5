@@ -1,0 +1,131 @@
+﻿@model MPQ.Models.UsuarioViewModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+@inject MPQ.Utils.Shared.LocSharedService SharedLocalizer;
+
+@{ Layout = null;
+                ViewData["Title"] = Localizer["Titulo"]; }
+
+<link rel="stylesheet" href="~/css/usuarios.css" />
+
+<div class="modal-header">
+    <h4 class="modal-title">@ViewData["Title"]</h4>
+    <button type="button" class="close" data-dismiss="modal">
+        <span aria-hidden="true">x</span><span class="sr-only">Fechar</span>
+    </button>
+</div>
+
+<form name="Cadastro">
+    <div class="modal-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="Login" class="control-label"></label>
+            <input asp-for="Login" class="form-control" placeholder="" name="Login" />
+            <span asp-validation-for="Login" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" name="Name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DefaultLanguage" class="control-label"></label>
+            <select asp-for="DefaultLanguage" asp-items="ViewBag.Idioma" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+            <span asp-validation-for="DefaultLanguage" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DefaultSiteId" class="control-label"></label>
+            <select asp-for="DefaultSiteId" asp-items="ViewBag.Site" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+            <span asp-validation-for="DefaultSiteId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="UserSiteId" class="control-label"></label>
+            <select asp-for="UserSiteId" asp-items="ViewBag.Site" multiple="multiple" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+            <span asp-validation-for="UserSiteId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="UserGroupId" class="control-label"></label>
+            <select asp-for="UserGroupId" asp-items="ViewBag.Group" multiple="multiple" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+            <span asp-validation-for="UserGroupId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Status" class="control-label"></label>
+            <select asp-for="Status" asp-items="ViewBag.Status" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+    </div>
+
+</form>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">@SharedLocalizer.GetLocalizedHtmlString("Fechar")</button>
+    <button type="button" id="botaoModalOk" class="btn btn-primary">@SharedLocalizer.GetLocalizedHtmlString("Salvar")</button>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
+
+<script>$(document).ready(function () {
+
+    $('select').selectpicker();
+
+        $('#botaoModalOk').on('click', function () {
+            $.ajax({
+                type: 'POST',
+                url: '/Usuario/Create',
+                dataType: 'json',
+                data: $('form[name=Cadastro]').serialize(),
+                success: function (data) {
+
+                    if (!data.Sucesso) {
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro',
+                            html: data.Mensagem
+                        });
+                        return false;
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso',
+                        text: data.Mensagem,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        onBeforeOpen: () => {
+                            Swal.showLoading()
+                            timerInterval = setInterval(() => {
+                                const content = Swal.getContent()
+                                if (content) {
+                                    const b = content.querySelector('b')
+                                    if (b) {
+                                        b.textContent = Swal.getTimerLeft()
+                                    }
+                                }
+                            }, 100)
+                        },
+                        onClose: () => {
+                            clearInterval(timerInterval)
+                        }
+                    }).then((result) => {
+
+                        $('#myModal').modal('hide');
+                        ListarTodos();
+                    });
+                }
+            })
+
+        });
+
+});
+</script>

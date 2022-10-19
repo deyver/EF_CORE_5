@@ -1,0 +1,87 @@
+﻿@model List<MenuViewModel>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>MPQ</title>
+
+    <!-- Custom fonts for this template-->
+    @*<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">*@
+
+    <!-- Custom styles for this template-->
+    <link href="~/css/Menu/sb-admin-2.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css">
+</head>
+
+<body id="page-top">
+
+
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" style="z-index: 1000;">
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-left" href="/Home"></a>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+        <br />
+
+
+        <li class="nav-item collapsed-overall">
+        @{ 
+            var target = "";
+            var control = "";
+            var root = Model?.Where(f => f.Level == 0 && (f.ParentId == null || f.ParentId == 0)).Select(f => new { Id = f.Id, Title = f.Title, IconUrl = f.IconUrl});
+            foreach (var parent in root)
+            {
+
+                target = "#t_" + parent.Id.ToString();
+                control = "t_" + parent.Id.ToString();
+
+                <a class="nav-link collapsed collapsed-overall" href="#" data-toggle="collapse" data-target="@target" aria-expanded="false" aria-controls="@control">
+                    <i class="@parent.IconUrl.ToString()" style="font-size: 1rem; color: white;"></i>
+                    <span>@parent.Title.ToString()</span>
+                </a>
+
+                <div id="@control" class="collapse collapsed-overall" aria-labelledby="headingTwo" data-parent="#accordionSidebar" style="">
+                    <div class="bg-primary py-2 collapse-inner rounded">
+                @{ 
+                    var menu = Model?.Where(f => f.ParentId == parent.Id).OrderBy(f => f.Sequence);
+                    foreach (var item in menu)
+                    {
+                        <a class="collapse-item text-light collapsed-overall d-flex" href="@item.Url.ToString()">
+                            <i class="@item.IconUrl.ToString()" style="font-size: 1rem; color: white;"></i>
+                            <div class="text-wrap">&nbsp;&nbsp; @item.Title.ToString()</div>
+                        </a>
+                    }
+                }
+                    </div>
+                </div>
+            }
+        }
+        </li>
+
+        <!-- Divider -->
+        <br />
+        <hr class="sidebar-divider d-none d-md-block">
+
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+    </ul>
+    <!-- End of Sidebar -->
+    <!-- Bootstrap core JavaScript-->
+    <script src="~/js/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="~/js/jquery-easing/jquery.easing.compatibility.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="~/js/Menu/sb-admin-2.js"></script>
+
+</body>
+</html>

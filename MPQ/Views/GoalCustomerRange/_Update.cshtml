@@ -1,0 +1,95 @@
+﻿@model MPQ.Models.GoalCustomerRangeViewModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+@inject MPQ.Utils.Shared.LocSharedService SharedLocalizer;
+
+@{ ViewData["Title"] = Localizer["Titulo"]; }
+
+<div class="modal-header">
+    <h4 class="modal-title">@ViewData["Title"]</h4>
+    <button type="button" class="close" data-dismiss="modal">
+        <span aria-hidden="true">x</span><span class="sr-only">Fechar</span>
+    </button>
+</div>
+
+<form name="Cadastro">
+    <div class="modal-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="GoalCustomerId" class="control-label"></label>
+            <select asp-for="GoalCustomerId" asp-items="ViewBag.GoalCustomer" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+            <span asp-validation-for="GoalCustomerId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" name="Name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Value" class="control-label"></label>
+            <input asp-for="Value" class="form-control" name="Value" />
+            <span asp-validation-for="Value" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Color" class="control-label"></label>
+            <div id="color-picker" class="input-group colorpicker-component">
+                <input asp-for="Color" class="form-control" name="Color" />
+                <span class="input-group-addon"><i></i></span>
+            </div>
+            <span asp-validation-for="Color" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="OperatorId" class="control-label"></label>
+            <select asp-for="OperatorId" asp-items="ViewBag.Operator" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+            <span asp-validation-for="OperatorId" class="text-danger"></span>
+        </div>
+
+        <input type="hidden" name="Id" value="@Model.Id" />
+    </div>
+
+</form>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">@SharedLocalizer.GetLocalizedHtmlString("Fechar")</button>
+    <button type="button" id="botaoModalOk" class="btn btn-primary">@SharedLocalizer.GetLocalizedHtmlString("Salvar")</button>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#Value').mask("0.000.000.000,00", { reverse: true, selectOnFocus: true });
+
+        $('#color-picker').colorpicker();
+        $('select').selectpicker();
+
+        let timerInterval;
+
+        $('#botaoModalOk').on('click', function () {
+            $.ajax({
+                type: 'POST', url: '/GoalCustomerRange/Update', dataType: 'json', data: $('form[name=Cadastro]').serialize(), success: function (data) {
+
+                    if (!data.Sucesso) {
+                        Swal.fire({ icon: 'error', title: 'Erro', html: data.Mensagem });
+                        return false;
+                    }
+
+                    Swal
+                        .fire({
+                            icon: 'success', title: 'Sucesso', text: data.Mensagem, timer: 2000, timerProgressBar: true,
+                            onBeforeOpen: () => { Swal.showLoading(); timerInterval = setInterval(() => { const content = Swal.getContent(); if (content) { const b = content.querySelector('b'); if (b) { b.textContent = Swal.getTimerLeft(); } } }, 100); },
+                            onClose: () => { clearInterval(timerInterval) }
+                        })
+                        .then((result) => { $('#myModal').modal('hide'); ListarTodos(); });
+                }
+            })
+
+        });
+
+        $("#IdEmpresaPadrao").on('change', function () { BuscarPlantasPorEmpresaSelecionada(); })
+    });
+</script>

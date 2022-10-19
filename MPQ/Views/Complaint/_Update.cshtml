@@ -1,0 +1,160 @@
+﻿@model MPQ.Models.ComplaintViewModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+@inject MPQ.Utils.Shared.LocSharedService SharedLocalizer;
+
+@{ ViewData["Title"] = Localizer["Titulo"]; }
+
+<div class="modal-header">
+    <h4 class="modal-title">@ViewData["Title"]</h4>
+    <button type="button" class="close" data-dismiss="modal">
+        <span aria-hidden="true">x</span><span class="sr-only">Fechar</span>
+    </button>
+</div>
+
+<form name="Cadastro">
+    <div class="modal-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <table width="100%">
+            <tr>
+                <td width="50%">
+                    <div class="form-group">
+                        <label asp-for="SiteId" class="control-label"></label>
+                        <select asp-for="SiteId" asp-items="ViewBag.Site" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+                        <span asp-validation-for="SiteId" class="text-danger"></span>
+                    </div>
+                </td>
+                <td width="50%">
+                    <div class="form-group">
+                        <label asp-for="BusinessUnitId" class="control-label"></label>
+                        <select asp-for="BusinessUnitId" asp-items="ViewBag.BusinessUnit" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+                        <span asp-validation-for="BusinessUnitId" class="text-danger"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <label asp-for="IndicatorId" class="control-label"></label>
+                        <select asp-for="IndicatorId" asp-items="ViewBag.Indicator" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+                        <span asp-validation-for="IndicatorId" class="text-danger"></span>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label asp-for="ComplaintDate" class="control-label"></label>
+                        <input asp-for="ComplaintDate" class="form-control" name="ComplaintDate" />
+                        <span asp-validation-for="ComplaintDate" class="text-danger"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <label asp-for="CustomerId" class="control-label"></label>
+                        <select asp-for="CustomerId" asp-items="ViewBag.Customer" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+                        <span asp-validation-for="CustomerId" class="text-danger"></span>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label asp-for="Quantity" class="control-label"></label>
+                        <input asp-for="Quantity" class="form-control" name="Quantity" />
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="form-group">
+                        <label asp-for="Issue" class="control-label"></label>
+                        <textarea asp-for="Issue" class="form-control" name="Issue" rows="3"></textarea>
+                        <span asp-validation-for="Issue" class="text-danger"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="form-group">
+                        <label asp-for="ContainmentAction" class="control-label"></label>
+                        <textarea asp-for="ContainmentAction" class="form-control" name="ContainmentAction" rows="3"></textarea>
+                        <span asp-validation-for="ContainmentAction" class="text-danger"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <label asp-for="ActionDate" class="control-label"></label>
+                        <input asp-for="ActionDate" class="form-control" name="ActionDate" />
+                        <span asp-validation-for="ActionDate" class="text-danger"></span>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label asp-for="ActionResponsible" class="control-label"></label>
+                        <input asp-for="ActionResponsible" class="form-control" name="ActionResponsible" />
+                        <span asp-validation-for="ActionResponsible" class="text-danger"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <label asp-for="GqrsNumber" class="control-label"></label>
+                        <input asp-for="GqrsNumber" class="form-control" name="GqrsNumber" />
+                        <span asp-validation-for="GqrsNumber" class="text-danger"></span>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label asp-for="SummarySent" class="control-label"></label>
+                        <select asp-for="SummarySent" asp-items="ViewBag.Sumary" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+                        <span asp-validation-for="SummarySent" class="text-danger"></span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <input type="hidden" name="Id" value="@Model.Id" />
+    </div>
+
+</form>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">@SharedLocalizer.GetLocalizedHtmlString("Fechar")</button>
+    <button type="button" id="botaoModalOk" class="btn btn-primary">@SharedLocalizer.GetLocalizedHtmlString("Salvar")</button>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('select').selectpicker();
+
+        let timerInterval;
+
+        $('#botaoModalOk').on('click', function () {
+            $.ajax({
+                type: 'POST', url: '/Complaint/Update', dataType: 'json', data: $('form[name=Cadastro]').serialize(), success: function (data) {
+
+                    if (!data.Sucesso) {
+                        Swal.fire({ icon: 'error', title: 'Erro', html: data.Mensagem });
+                        return false;
+                    }
+
+                    Swal
+                        .fire({
+                            icon: 'success', title: 'Sucesso', text: data.Mensagem, timer: 2000, timerProgressBar: true,
+                            onBeforeOpen: () => { Swal.showLoading(); timerInterval = setInterval(() => { const content = Swal.getContent(); if (content) { const b = content.querySelector('b'); if (b) { b.textContent = Swal.getTimerLeft(); } } }, 100); },
+                            onClose: () => { clearInterval(timerInterval) }
+                        })
+                        .then((result) => { $('#myModal').modal('hide'); ListarTodos(); });
+                }
+            })
+
+        });
+
+        $("#IdEmpresaPadrao").on('change', function () { BuscarPlantasPorEmpresaSelecionada(); })
+    });
+</script>

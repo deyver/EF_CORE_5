@@ -1,0 +1,43 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer;
+@inject MPQ.Utils.Shared.LocSharedService SharedLocalizer;
+
+@{
+    ViewData["Title"] = "Produced Part";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var valor = Localizer["Titulo"];
+    var culture = Context.Request.Cookies[".AspNetCore.Culture"];
+
+    //espanha = c=es|uic=es
+    //português = c=pt-BR|uic=pt-BR
+
+}
+
+<script src="~/js/jsviews/producedpart.js"></script>
+<h1>@Localizer["Titulo"]</h1>
+
+<p>
+    <a title="@SharedLocalizer.GetLocalizedHtmlString("Novo")"
+       id="botaoCriar" class="btn btn-success" href="#"
+       data-toggle="modal" data-acao="Excluir" data-target="#myModal" data-modal="">
+        <i class="fas fa-plus"></i> @SharedLocalizer.GetLocalizedHtmlString("Novo")
+    </a>
+
+    <button title="@SharedLocalizer.GetLocalizedHtmlString("Atualizar")" id="btnPesquisar" class="btn btn-primary">
+        <i class="fas fa-sync-alt"></i>
+    </button>
+
+    <button title="@SharedLocalizer.GetLocalizedHtmlString("ExportarExcel")" id="btnExportar" class="btn btn-success">
+        <i class="fas fa-file-excel"></i>
+    </button>
+</p>
+
+<div id="myModal" class="modal fade in">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div id="myModalContent"></div>
+        </div>
+    </div>
+</div>
+
+<div id="jqxGrid" class="jqxBootstrap"></div>

@@ -1,0 +1,209 @@
+﻿@model MPQ.Models.BarraSuperiorViewModel;
+
+@{     
+    string user = string.Empty;
+    string login = string.Empty;
+    string language = string.Empty;
+    string site = string.Empty;
+    string cookie = Context.Request.Cookies["mpq_login_session"];
+
+    if (!string.IsNullOrEmpty(cookie))
+    {
+        string[] cookieValue = MPQ.Utils.StringUtils.Base64Decode(cookie).Split('\\');
+        string[] siteValue = cookieValue[2].Split('|');
+        user = $"{cookieValue[3]}";
+        login = $"{cookieValue[1]}";
+        language = $"{cookieValue[5]}";
+        site = $"{siteValue[1] ?? ""}";
+    }
+
+}
+
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-left" href="/Home">
+        <div id="LogoTop" class="logo logo-small">
+            <img src="~/images/logo-yazaki.png" />
+        </div>
+    </a>
+
+    <!-- Topbar Navbar -->
+    <ul class="navbar-nav ml-auto">
+
+        <!-- Nav Item - User Information -->
+        <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="mr-2 d-none d-lg-inline text-gray-600">Acesso: @login</span>
+                <i class="bi-person-fill text-gray-400 text-lg"></i><br />
+            </a>
+
+            <!-- Dropdown - User Information -->
+            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+
+                <a class="dropdown-item" href="#">
+                    <i class="bi-person-circle text-gray-800 text-lg"></i>&nbsp;&nbsp;&nbsp;Usuário: <span id="lblUser">@user</span>
+                </a>
+
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#siteModal">
+                    <i class="bi-geo-alt text-gray-800 text-lg"></i>&nbsp;&nbsp;&nbsp;Planta: <span id="lblSite">@site</span>
+                </a>
+
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#idiomaModal">
+                    <i class="bi-globe text-gray-800 text-lg"></i>&nbsp;&nbsp;&nbsp;Idioma: <span id="lblLanguage">@language</span>
+                </a>
+
+                <div class="dropdown-divider"></div>
+
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="bi-power text-gray-800 text-lg"></i>&nbsp;&nbsp;&nbsp;Logout
+                </a>
+
+            </div>
+
+        </li>
+
+    </ul>
+
+    <form name="Cadastro">
+
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model._userId)
+
+        <div id="siteModal" class="modal fade in">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div id="myModalContent">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Alterar sua Planta</h4>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">x</span><span class="sr-only">Fechar</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label asp-for="_siteId" class="control-label"></label>
+                                <select asp-for="_siteId" asp-items="ViewBag.Site" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+                                <span asp-validation-for="_siteId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                            <button type="button" id="btnConfirmaSite" class="btn btn-primary" data-dismiss="modal">Confirmar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="idiomaModal" class="modal fade in">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div id="myModalContent">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Alterar Idioma</h4>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">x</span><span class="sr-only">Fechar</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label asp-for="_Language" class="control-label"></label>
+                                <select asp-for="_Language" asp-items="ViewBag.Idioma" class="selectpicker show-tick" data-style="custom-select" data-live-search="true" data-selected-text-format="count" data-width="100%" data-size="4"></select>
+                                <span asp-validation-for="_Language" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                            <button type="button" id="btnConfirmaIdioma" class="btn btn-primary" data-dismiss="modal">Confirmar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+        <div id="logoutModal" class="modal fade in">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div id="myModalContent">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Atenção</h4>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">x</span><span class="sr-only">Fechar</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Tem certeza que deseja sair?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                            <button type="button" id="botaoModalOkSairSistema" class="btn btn-primary" data-dismiss="modal">Sair do sistema</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+
+                $('#botaoModalOkSairSistema').on('click', function () { window.location.href = "/Login/Sair"; });
+                $('#btnConfirmaIdioma').on('click', function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Home/SetLanguage',
+                        dataType: 'json',
+                        data: $('form[name=Cadastro]').serialize(),
+                        success: function (data) {
+                            if (!data.Sucesso) {
+                                Swal.fire({ icon: 'error', title: 'Erro', html: data.Mensagem }); return false;
+                            }
+                            else {
+                                $('#lblLanguage').html(data.Dados);
+                            }
+
+                            //window.location.href = "/Home";
+                            window.location.reload();
+
+                            Swal.fire({
+                                icon: 'success', title: 'Sucesso', text: data.Mensagem, timer: 2000, timerProgressBar: true,
+                                onBeforeOpen: () => { Swal.showLoading(); timerInterval = setInterval(() => { const content = Swal.getContent(); if (content) { const b = content.querySelector('b'); if (b) { b.textContent = Swal.getTimerLeft() } } }, 100) },
+                                onClose: () => { clearInterval(timerInterval) }
+                            }).then((result) => {
+                                $('#idiomaModal').modal('hide');
+                            });
+                        }
+                    })                    
+                });
+                $('#btnConfirmaSite').on('click', function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Home/SetSite',
+                        dataType: 'json',
+                        data: $('form[name=Cadastro]').serialize(),
+                        success: function (data) {
+                            if (!data.Sucesso) {
+                                Swal.fire({ icon: 'error', title: 'Erro', html: data.Mensagem }); return false;
+                            }
+                            else {
+                                $('#lblSite').html(data.Dados);
+                            }
+
+                            //window.location.href = "/Home";
+                            window.location.reload();
+
+                            Swal.fire({
+                                icon: 'success', title: 'Sucesso', text: data.Mensagem, timer: 2000, timerProgressBar: true,
+                                onBeforeOpen: () => { Swal.showLoading(); timerInterval = setInterval(() => { const content = Swal.getContent(); if (content) { const b = content.querySelector('b'); if (b) { b.textContent = Swal.getTimerLeft() } } }, 100) },
+                                onClose: () => { clearInterval(timerInterval) }
+                            }).then((result) => {
+                                $('#siteModal').modal('hide');
+                            });
+                        }
+                    })
+                });
+            });
+        </script>
+</nav>
